@@ -1,0 +1,33 @@
+package hello
+
+use hello.String
+
+struct Hello
+    var hello
+    const h
+end
+
+Hello say()
+    let hello = "Hello, World"
+    this.hello = hello.concat hello
+end
+
+
+Integer main()
+    Hello hello
+    Hello s
+
+    if(hello > s)
+
+    elif(s.length() == 0)
+
+    else
+    
+    end
+
+    while(i.next())
+        stdin.print("hello")
+    end
+end
+
+

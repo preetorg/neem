@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cctype>
 
 using namespace std;
 
@@ -42,28 +43,45 @@ struct Keyword: State {
 struct Seperator: State {
    
     int setState(char c) {
- 
     }
 };
 
 struct Identifier: State {
-
+    int i = 0;
+    string s;
+    int setState(char c) {
+        if(i == 0 && ( c == '_' || isdigit(c) ) )
+            return 0;       
+        s += c;		
+    }
 };
 
 struct IntegerLiteral: State {
-
+     int integer;
+     int setState(char c) {
+         integer += (int)c;
+     }
 };
 
 struct FloatLiteral: State {
-
+      float f;
+      int setState(char c) {
+          f+= (float)c;
+      }
 };
 
 struct DoubleLiteral: State {
-
+      double d;
+      int setState(char c) {
+          d += (double)c;
+      }
 };
 
 struct StringLiteral: State {
-
+      string s;
+      int setState(char c) {
+          s += c;
+      }
 };
 
 struct Condition: State {

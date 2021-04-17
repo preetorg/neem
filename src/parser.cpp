@@ -35,6 +35,8 @@ struct Seperator: State {
     }
 };
 
+struct Relation: State {};
+
 struct Identifier: State {
     int i = 0;
     string s;
@@ -87,7 +89,7 @@ struct Condition: State {
 struct Declaration: State {
       Keyword keyword;
       Identifier identifier;
-}
+};
 
 struct StructBlock: State {
       vector<Declaration> declarations;
@@ -160,7 +162,7 @@ struct Context {
 };
 
 
-int readFile(char* sourcefilename) {
+int readFile(string sourcefilename) {
     struct Context context;
     source.open(sourcefilename,ios::in);
     if(!source)

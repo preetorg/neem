@@ -1,6 +1,7 @@
+#include <string>
 #ifndef PARSER_H
 #define PARSER_H
 
-int readFile(char* sourcefilename);
+int readFile(string sourcefilename);
 
 #endif

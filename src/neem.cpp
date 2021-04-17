@@ -1,5 +1,5 @@
-#include "parser.h"
+#include "compiler.h"
 
 int main(int argc, char** argv) {
-   readFile(argv[1]);
+   compile(argv[1]);
 }

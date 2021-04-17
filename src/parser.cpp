@@ -198,9 +198,13 @@ struct Context {
          Keyword keyword;
 	 Condition condition;
      }
+
+     int parse() {
+         return 0;
+     }
 };
 
-int parse(char* sourcefilename) {
+int readFile(char* sourcefilename) {
     struct Context context;
     source.open(sourcefilename,ios::in);
     if(!source)
@@ -208,7 +212,7 @@ int parse(char* sourcefilename) {
     char c = 0;
     while(!source.eof()) {
         source.read(&c,1);
-	context.parsePackage();
+	context.parse();
 	cout << c;
     }
     return 0;

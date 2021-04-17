@@ -23,20 +23,9 @@ struct State {
     }
 };
 
-struct Context {
-
-    int take(char c) {
-      
-    }
-};
-
 struct Keyword: State {
-    int i = 0;
-    int setState(char c) {
-        for(string keyword: keywords) {
-           if(keyword[i] != c)
-             i++;
-	}
+    int setState(string keyword) {
+        
     }
 };
 
@@ -57,23 +46,23 @@ struct Identifier: State {
 };
 
 struct IntegerLiteral: State {
-     int integer;
+     string integer;
      int setState(char c) {
-         integer += (int)c;
+         integer += c;
      }
 };
 
 struct FloatLiteral: State {
-      float f;
+      string f;
       int setState(char c) {
-          f+= (float)c;
+          f+= c;
       }
 };
 
 struct DoubleLiteral: State {
-      double d;
+      string d;
       int setState(char c) {
-          d += (double)c;
+          d += c;
       }
 };
 
@@ -88,51 +77,127 @@ struct Condition: State {
 
 };
 
-struct Block: State {
-
+struct StructBlock: State {
+        
 };
 
 struct Struct: State {
     Keyword keyword;
     Identifier identifier;
     vector<Identifier> args;
-    Block block;
+    StructBlock block;
 };
 
-struct If: State{
+struct Block: State {
+
+};
+
+struct If: Block{
     Keyword keyword;
     Condition condition;
-    Block block;
 };
 
-struct ElseIf: State {
+struct ElseIf: Block {
     Keyword keyword;
     Condition condition;
-    Block block;
 };
 
-struct Else: State {
+struct Else: Block {
     Keyword keyword;
     Condition condition;
-    Block block;
 };
 
-struct While: State {
+struct While: Block {
     Keyword keyword;
     Condition condition;
-    Block block;
 };
 
-struct Function: State {
+struct FunctionArgs: State {
+    vector<Identifier> functionArgs;
+};
+
+
+struct Function: Block {
     Identifier type;
     Identifier name;
-    vector<Identifier> args;
-    Block block;
+    FunctionArgs args;
 };
+
+struct Package: State {
+    Keyword keyword;
+    Identifier name;
+};
+
 
 struct Use: State {
     Keyword keyword;
     Identifier identifier;
+};
+
+struct Context {
+     
+     Identifier parseIdentifier() {
+         Identifier identifier;
+	 return identifier;
+     }
+     
+     Keyword parseKeyword(string s) {
+         Keyword keyword;
+	 return keyword;
+     }
+
+     Package parsePackage() {
+         Package package;
+	 package.keyword = parseKeyword(keywords[0]);
+	 package.name = parseIdentifier();
+     }
+
+     Use parseUse() {
+         Use use;
+	 use.keyword = parseKeyword(keywords[1]);
+	 use.identifier = parseIdentifier();
+     }
+
+     Struct parseStruct() {
+          Struct s;
+	  s.keyword = parseKeyword(keywords[2]);
+	  s.identifier = parseIdentifier();
+     }
+
+     FunctionArgs parseFunctionArgs() {
+          FunctionArgs functionArgs;
+	  return functionArgs;
+     }
+
+     Function parseFunction() {
+         Function function;
+         function.type = parseIdentifier();
+         function.name = parseIdentifier();
+         function.args = parseFunctionArgs();
+     }
+
+     Condition parseCondition() {
+         Condition condition;
+     }
+
+     If parseIf() {
+         Keyword keyword;
+	 Condition condition;
+     }
+
+     ElseIf parseElseIF() {
+         Keyword keyword;
+	 Condition condition;
+     }
+
+     Else parseElse() {
+         Keyword keyword;
+     }
+
+     While parseWhile() {
+         Keyword keyword;
+	 Condition condition;
+     }
 };
 
 int parse(char* sourcefilename) {
@@ -143,7 +208,7 @@ int parse(char* sourcefilename) {
     char c = 0;
     while(!source.eof()) {
         source.read(&c,1);
-	context.take(c);
+	context.parsePackage();
 	cout << c;
     }
     return 0;

@@ -12,7 +12,6 @@ Hello say()
     this.hello = hello.concat hello
 end
 
-
 Integer main()
     Hello hello
     Hello s

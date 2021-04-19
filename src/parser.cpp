@@ -10,7 +10,7 @@ using namespace std;
 
 fstream source;
 
-string keywords[] = {"package", "use", "struct", "end", "if", "else", "while", "var", "let", "const"};
+string keywords[] = {"package", "use", "struct", "end", "if", "else", "while", "var", "let", "const", "operator"};
 string seperators[] = {" ", "\n"};
 string relationaloperators[] = {"&&", "||", "<", ">","<=",">=","!", "!=", "=="};
 char mathoperators[] = {'+', '-', '/','*', '^', '%'};
@@ -197,6 +197,8 @@ struct Function: Block {
 struct FunctionCall: State {
     Name name;
     vector<Value> args;
+
+    
     int is(Context state, string buffer) {
         state.setState(new Name);
         while(state.not(new Seperator))
@@ -207,7 +209,9 @@ struct FunctionCall: State {
 struct Package: State {
     Keyword keyword;
     Identifier name;
-
+    Module codegen() {
+        
+    }
     int is(Context state, string buffer) {
         state.setState(new Keyword);
         state.setState(new Identifier);
@@ -234,6 +238,8 @@ struct Context {
      }
 
      int take(char c) {
+         buffer += c;
+         state.is(this,buffer);
      }
 
 

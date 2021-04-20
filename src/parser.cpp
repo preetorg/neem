@@ -10,10 +10,16 @@ using namespace std;
 
 fstream source;
 
-string keywords[] = {"package", "use", "struct", "end", "if", "else", "while", "var", "let", "const", "operator"};
+string keywords[] = 
+{"package", "use", "struct", "end", "if", "else", 
+"while", "var", "let", "const", 
+"operator","null", "match", "case", "try", "catch", "async", "await"
+, "def", "generic", "proc", "extends"};
+
 string seperators[] = {" ", "\n"};
 string relationaloperators[] = {"&&", "||", "<", ">","<=",">=","!", "!=", "=="};
-char mathoperators[] = {'+', '-', '/','*', '^', '%'};
+char mathoperators[] = {'+', '-', '/','*', '**', '%'};
+char bitwiseoperators[] = {'&','|','^','~','>>','<<'};
 
 struct State {
     int is(Context context,string buffer) {
@@ -104,6 +110,11 @@ struct Condition: State {
       }
 };
 
+struct Generic: State {
+    Keyword keyword;
+    vector<Identifier> params;
+};
+
 struct Declaration: State {
       Keyword keyword;
       Identifier identifier;
@@ -126,6 +137,7 @@ struct StructBlock: State {
 struct Struct: State {
     Keyword keyword;
     Identifier identifier;
+    Identifier extends;
     StructBlock block;
     int is(Context state, string buffer) {
         state.setState(new Keyword);
@@ -155,7 +167,7 @@ struct ElseIf: Block {
     Condition condition;
     int is(Context state, string buffer) {
         state.setState(new Keyword);
-        state.setState(new Conditon);
+        state.setState(new Condition);
     }
 };
 
@@ -184,7 +196,6 @@ struct FunctionArgs: State {
 
 
 struct Function: Block {
-    Identifier type;
     Identifier name;
     FunctionArgs args;
     int is(Context state, string buffer) {
@@ -231,10 +242,20 @@ struct Use: State {
 
 struct Context {
      State state;
+     State current;
+     State notstate;
      string buffer; 
    
      State setState(State* state) {
          this->state = *state;
+     }
+
+     State setCurrent(State* state) {
+         this->current = *state;
+     }
+
+     State setNotState(State* state) {
+         this->notstate = *state;
      }
 
      int take(char c) {

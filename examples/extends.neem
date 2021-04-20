@@ -1,0 +1,54 @@
+package extends
+
+use print
+
+var hello = ""
+
+struct T extends String
+   let Hello
+   var hello
+end
+
+def operator+(s)
+      s.Hello
+      s.hello
+end
+
+
+generic<X> struct enum
+     let x = 1
+     let y = 2
+end
+
+//@comment("hello")
+def main()
+  let hello = "Krishna Satya"
+  let array = [1,2,3,4,5,6,7]
+  let map = {"1":2,"hello":4}
+  let memory = 2
+  if(memory["1"] == 2)
+      printf.stdin(memory)
+  end
+  let array2 = [[1,2,3,4,5],[1,2,3,4,5]]
+  let row = Integer(0)
+  let column = Integer(1)
+  array2.get(0,1)
+  let ref? = memory;
+  await ref.schedule(async (x)=>{
+      print(x)
+  })
+  //related code 
+  container.schedule(proc {
+  
+  })
+
+  try
+        
+  catch(c) 
+
+  end
+  
+  match(ref)
+      case null: printf("error")
+  end
+end

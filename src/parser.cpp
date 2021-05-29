@@ -11,26 +11,27 @@ using namespace std;
 fstream source;
 
 string keywords[] = 
-{"package", "use", "struct", "end", "if", "else", 
+{"import", "export", "record", "end", "if", "else", 
 "while", "var", "let", "const", 
-"operator","null", "match", "case", "try", "catch", "async", "await"
-, "def", "generic", "proc", "extends"};
+"operator","null", "foreach"};
 
 string seperators[] = {" ", "\n"};
 string relationaloperators[] = {"&&", "||", "<", ">","<=",">=","!", "!=", "=="};
 char mathoperators[] = {'+', '-', '/','*', '**', '%'};
 char bitwiseoperators[] = {'&','|','^','~','>>','<<'};
 
-struct State {
-    int is(Context context,string buffer) {
 
+struct State {
+    string buffer;
+    int take(char c) {
+        buffer = buffer + c;
     }
 };
 
-
 struct Keyword: State {
-    int is(Context context, string buffer) {
+    int take(char c) {
         int i = 0;
+        State::take(c);
         for(string keyword: keywords) {                
             if(keyword == buffer)
                 return i;
@@ -41,8 +42,9 @@ struct Keyword: State {
 
 struct Seperator: State {
    
-    int is(Context context, string buffer) {
+    int take(char c) {
         int i = 0;
+        State::take(c);
         for(string sep: seperators) {
             if(buffer == sep)
                 return i;
@@ -52,220 +54,66 @@ struct Seperator: State {
 };
 
 struct RelationOperator: State {
-
-};
-
-struct Identifier: State {
-    int i = 0;
-    string s;
-    int is(Context state, string buffer) {
-        if(i == 0 && ( buffer == "_" || isdigit(buffer.c_str()) ) )
-            return 0;       
-        s += buffer;		
-    }
-};
-
-struct Name: Identifier {};
-
-struct Value: State {};
-
-struct IntegerLiteral: Value {
-     string integer;
-     int is(Context state, string buffer) {
-         integer += buffer;
-     }
-};
-
-struct FloatLiteral: Value {
-      string f;
-      int is(Context state,string buffer) {
-          f+= buffer;
-      }
-};
-
-struct DoubleLiteral: Value {
-      string d;
-      int is(Context state, string buffer) {
-          d += buffer;
-      }
-};
-
-struct StringLiteral: Value {
-      string s;
-      int is(Context state, string buffer) {
-          s += buffer;
-      }
-};
-
-
-struct Condition: State {
-      Value value1;
-      RelationOperator r;
-      Value value2;
-
-      int is(Context state, string buffer) {
-          state.setState(new Value);
-          state.setState(new RelationOperator);
-          state.setState(new Value);
-      }
-};
-
-struct Generic: State {
-    Keyword keyword;
-    vector<Identifier> params;
-};
-
-struct Declaration: State {
-      Keyword keyword;
-      Identifier identifier;
-
-      int is(Context state, string buffer) {
-          state.setState(new Keyword);
-          state.setState(new Identifier);
-      }
-};
-
-struct StructBlock: State {
-      vector<Declaration> declarations;
-      int is(Context state, string buffer) {
-          while(state.not(new Keyword)) {
-              state.setState(new Declaration);
-          }
-      }
-};
-
-struct Struct: State {
-    Keyword keyword;
-    Identifier identifier;
-    Identifier extends;
-    StructBlock block;
-    int is(Context state, string buffer) {
-        state.setState(new Keyword);
-        state.setState(new Identifier);
-        state.setState(new StructBlock);
-    }
-};
-
-struct Block: State {
-    vector<Declaration> declarations;
-    int is(Context state, string buffer) {
-        state.setState(new Declaration);
-    }
-};
-
-struct If: Block{
-    Keyword keyword;
-    Condition condition;
-    int is(Context state, string buffer) {
-        state.setState(new Keyword);
-        state.setState(new Condition);
-    }
-};
-
-struct ElseIf: Block {
-    Keyword keyword;
-    Condition condition;
-    int is(Context state, string buffer) {
-        state.setState(new Keyword);
-        state.setState(new Condition);
-    }
-};
-
-struct Else: Block {
-    Keyword keyword;
-    Condition condition;
-};
-
-struct While: Block {
-    Keyword keyword;
-    Condition condition;
-    int is(Context state, string buffer) {
-        state.setState(new Keyword);
-        state.setState(new Condition);
-    }
-};
-
-struct FunctionArgs: State {
-    vector<Identifier> functionArgs;
-    int is(Context state, string buffer) {
-        while(state.not(new Seperator)) {
-            functionArgs.push_back(state.setState(new Identifier));
+    int take(char c) {
+        int i = 0;
+        State::take(c);
+        for(string op: relationaloperators) {
+            if(buffer == op)
+                return i;
+            i = i + 1;
         }
     }
 };
 
-
-struct Function: Block {
-    Identifier name;
-    FunctionArgs args;
-    int is(Context state, string buffer) {
-        state.setState(new Identifier);
-        state.setState(new Identifier);
-        state.setState(new FunctionArgs);
+struct MathOperator: State {
+    int take(char c) {
+        int i = 0;
+        State::take(c);
+        for(;i<6;i++) {
+            if(buffer[0] == mathoperators[i])
+                return i;
+        }
     }
 };
 
-struct FunctionCall: State {
-    Name name;
-    vector<Value> args;
-
-    
-    int is(Context state, string buffer) {
-        state.setState(new Name);
-        while(state.not(new Seperator))
-            args.push_back(state.setState(new Value));
+struct BitwiseOperator: State {
+    int take(char c) {
+        int i = 0;
+        State::take(c);
+        for(;i<6;i++) {
+            if(buffer[0] == bitwiseoperators[i])
+                return i;
+        }
     }
 };
 
-struct Package: State {
-    Keyword keyword;
-    Identifier name;
-    Module codegen() {
-        
-    }
-    int is(Context state, string buffer) {
-        state.setState(new Keyword);
-        state.setState(new Identifier);
+struct Identifier: State {
+    int i = 0;
+    int take(char c) {
+        State::take(c);
+        if(i == 0 && ( buffer == "_" || isdigit(buffer[0]) ) )
+            return 0;       		
     }
 };
 
 
-struct Use: State {
-    Keyword keyword;
-    Identifier identifier;
-
-    int is(Context state, string buffer) {
-        state.setState(new Keyword);
-        state.setState(new Identifier);
-    }
+struct Literal: State{
+      int take(char c) {
+          State::take(c);
+      }
 };
 
 struct Context {
-     State state;
-     State current;
-     State notstate;
-     string buffer; 
-   
-     State setState(State* state) {
-         this->state = *state;
-     }
-
-     State setCurrent(State* state) {
-         this->current = *state;
-     }
-
-     State setNotState(State* state) {
-         this->notstate = *state;
-     }
-
+     Keyword keyword;
+     Seperator seperator;
      int take(char c) {
-         buffer += c;
-         state.is(this,buffer);
+         
+        
      }
-
-
      
 };
+
+
 
 
 int readFile(string sourcefilename) {

@@ -11,7 +11,7 @@ using namespace std;
 fstream source;
 
 string keywords[] = 
-{"import", "export", "record", "end", "if", "else", 
+{"import", "export", "record", "end", "if", "else", "def"
 "while", "var", "let", "const", 
 "operator","null", "foreach"};
 
@@ -107,8 +107,21 @@ struct Context {
      Keyword keyword;
      Seperator seperator;
      int take(char c) {
-         
-        
+        int i = keyword.take(c);
+        if(i == 0)
+            parse_import();
+        else if(i == 3){
+     
+        }else if(i == 6)
+            parse_def();
+        else if(i == 4)
+            parse_if();
+        else if(i == 5)
+            parse_else();
+        else if(i == 7)
+            parse_while();
+        else if(i == 13)
+            parse_foreach();
      }
      
 };

@@ -1,5 +1,5 @@
 #include "parser.h"
-
+#include "ast.cpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -12,7 +12,7 @@ fstream source;
 
 string keywords[] = 
 {"import", "export", "record", "end", "if", "else", "def"
-"while", "var", "let", "const", 
+"while", "val", "let", "const", 
 "operator","null", "foreach"};
 
 string seperators[] = {" ", "\n"};
@@ -106,22 +106,87 @@ struct Literal: State{
 struct Context {
      Keyword keyword;
      Seperator seperator;
-     int take(char c) {
-        int i = keyword.take(c);
-        if(i == 0)
-            parse_import();
-        else if(i == 3){
+     Identifier identifier;
+     RelationOperator relop;
+     MathOperator mathop;
+     BitwiseOperator bitwiseop;
+     Literal literal;
+     int next = 0;
+     int index = -1;
+     int issep = false;
+     bool match = false;
+     Ast ast;
+
+     int parse_keyword() {
+         if(index == 0) {
+            ast.importStatement(keywords[index]);
+            issep = true;
+            next = 1;
+        } else if(index == 1) {
+            ast.exportStatement(keywords[index]);
+            issep = true;
+            next = 1;
+        } else if(index == 2) {
+            ast.recordStatement(keywords[index]);
+            issep = true;
+            next = 1;
+        } else if(index == 3) {
+            //ast.end(keywords[index]);
+        } else if(index == 4) {
+            ast.ifStatement(keywords[index]);
+            next = 1;
+        } else if(index == 5) {
+            ast.elseStatement(keywords[index]);
+            next = 1;
+        } else if(index == 6) {
+            //ast.ifElseStatement(keywords[index]);
+            next = 1;
+        } else if(index == 7) {
+            ast.whileStatement(keywords[index]);
+            next = 1;
+        } else if(index == 8) {
+            ast.object(keywords[index]);
+            next = 1;
+        } else if(index == 9) {
+            ast.declaration(keywords[index]);
+            next = 1;
+        } else if(index == 10) {
+            ast.constant(keywords[index]);
+            next = 1;
+        } else if(index == 11) {
+            //ast.oper(keywords[index]);
+        } else if(index == 12) {
+            ast.null(keywords[index]);
+        } else if(index == 13) {
+            ast.forEachStatement(keywords[index]);
+        }
+
+     }
      
-        }else if(i == 6)
-            parse_def();
-        else if(i == 4)
-            parse_if();
-        else if(i == 5)
-            parse_else();
-        else if(i == 7)
-            parse_while();
-        else if(i == 13)
-            parse_foreach();
+     int take(char c) {
+        if(issep) {
+          seperator.take(c);
+          return;
+        }
+        if(next == 0)
+          index = keyword.take(c);
+        else if(next == 1)
+          index = identifier.take(c);
+        else if(next == 2)
+          if(c == '=')
+            return 1;
+        else if(next == 3)
+          index = relop.take(c);
+        else if(next == 4)
+          index = mathop.take(c);
+        else if(next == 5)
+          index = bitwiseop.take(c);
+
+        if(index != -1) {
+            if(next == 0) {
+                parse_keyword();
+            }
+        }
      }
      
 };

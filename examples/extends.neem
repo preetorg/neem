@@ -1,10 +1,8 @@
-package extends
+import print
 
-use print
+const hello = ""
 
-var hello = ""
-
-struct T extends String
+record String
    let Hello
    var hello
 end
@@ -15,7 +13,7 @@ def operator+(s)
 end
 
 
-generic<X> struct enum
+record enum
      let x = 1
      let y = 2
 end
@@ -34,21 +32,10 @@ def main()
   let column = Integer(1)
   array2.get(0,1)
   let ref? = memory;
-  await ref.schedule(async (x)=>{
-      print(x)
-  })
-  //related code 
-  container.schedule(proc {
-  
-  })
 
   try
         
   catch(c) 
 
-  end
-  
-  match(ref)
-      case null: printf("error")
   end
 end

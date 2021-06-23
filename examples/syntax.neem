@@ -1,0 +1,75 @@
+import types
+import console
+
+//@description enum
+enum hello
+	One = "hello", Two = 2.2f, Three, Four
+end
+
+error hello(val)
+	if(val > 5)
+		error
+	end
+end
+
+//@description map
+record s
+    //@ int, int, int
+	hello, types, hello2
+end
+
+//@description namespace
+namespace list
+	vararg
+end
+
+export class arraylist
+    // mixin
+    include list
+    // inherits
+	extends list
+	let size
+    // method
+	arraylist sayHello(): error
+		s.hello = s
+    	s.types = "hello"
+    	s.hello2 = s(2, s.types)
+    	s.hello2 = list(1,2,3,4)
+	end
+end
+
+//testing
+spec "should work" do
+	test "hello" do
+		print "hello, world"
+	end
+end
+ 
+const = "hello"
+
+
+def main(args)
+    let size = 0
+    let r = s{hello: 2, types: 2, hello2: 3}
+    let const size = 2
+    
+    size = null
+
+	try
+		console::printf("hello")
+	catch(error)
+		pass
+	end
+
+	args.each do |i|
+ 		console::print(i)
+	end
+    //do both cases
+	switch(2&&3) 
+		case 2: "hello"
+		case 3 do 
+		   "world";
+		end
+		default: return
+	end
+end
